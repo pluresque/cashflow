@@ -6,7 +6,7 @@ abstract class CommandLine
 {
     protected Dictionary<string, Action<string[]>> commands = null!;
     protected readonly Database database = new();
-    
+
     public abstract void Run();
 
     protected static string ReadInput(string prompt, string defaultValue)
@@ -20,15 +20,15 @@ abstract class CommandLine
     {
         string[] inputParts = input.Split(' ');
         string command = inputParts[0].ToLower();
-        
-        if (command == "exit")
-            return false;  // Meaning exit
 
-        if (!commands.ContainsKey(command)) 
+        if (command == "exit")
+            return false; // Meaning exit
+
+        if (!commands.ContainsKey(command))
             Logger.Info("Invalid command. Type 'help' for a list of commands.");
         else
             commands[command](inputParts.Length > 1 ? inputParts[1..] : Array.Empty<string>());
-        
+
         return true; // Continue
     }
 

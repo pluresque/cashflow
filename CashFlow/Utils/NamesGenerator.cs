@@ -4,8 +4,28 @@ public static class NamesGenerator
 {
     private static Random random = new();
 
-    private static string[] firstWords = { "Silly", "Happy", "Angry", "Crazy", "Funny", "Giggly", "Cheerful", "Playful" };
-    private static string[] secondWords = { "Cat", "Dog", "Dinosaur", "Elephant", "Monkey", "Giraffe", "Penguin", "Cockroach" };
+    private static string[] firstWords =
+    {
+        "Silly",
+        "Happy",
+        "Angry",
+        "Crazy",
+        "Funny",
+        "Giggly",
+        "Cheerful",
+        "Playful"
+    };
+    private static string[] secondWords =
+    {
+        "Cat",
+        "Dog",
+        "Dinosaur",
+        "Elephant",
+        "Monkey",
+        "Giraffe",
+        "Penguin",
+        "Cockroach"
+    };
 
     public static string GenerateFunnyName()
     {

@@ -23,12 +23,13 @@ public class Account
     public static Account FromString(string input)
     {
         string[] parts = input.Split(':');
-        if (parts.Length != 2) throw new ArgumentException("Invalid input format for creating Account object");
+        if (parts.Length != 2)
+            throw new ArgumentException("Invalid input format for creating Account object");
         string accountName = parts[0];
 
         if (!double.TryParse(parts[1], out var accountBalance))
             throw new ArgumentException("Invalid input format for creating Account object");
-        
+
         return new Account(accountName, accountBalance);
 
         // If the input format is incorrect, return null or throw an exception based on your preference.

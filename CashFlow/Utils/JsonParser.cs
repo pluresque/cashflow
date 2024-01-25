@@ -2,7 +2,6 @@ using System.Text.Json;
 
 namespace CashFlow.CashFlow.Utils;
 
-
 public class JsonParser
 {
     private readonly string json;
@@ -30,7 +29,10 @@ public class JsonParser
             }
             else
             {
-                throw new FileNotFoundException("The specified JSON file does not exist.", file.FullName);
+                throw new FileNotFoundException(
+                    "The specified JSON file does not exist.",
+                    file.FullName
+                );
             }
         }
 
@@ -48,7 +50,7 @@ public class JsonParser
         int index = 0;
         return ParseValue(ref index);
     }
-    
+
     private object ParseValue(ref int index)
     {
         SkipWhiteSpace(ref index);
@@ -89,7 +91,9 @@ public class JsonParser
             SkipWhiteSpace(ref index);
             if (json[index] != ':')
             {
-                throw new InvalidOperationException($"Expected ':' at position {index}, but found '{json[index]}'.");
+                throw new InvalidOperationException(
+                    $"Expected ':' at position {index}, but found '{json[index]}'."
+                );
             }
 
             index++; // Skip ':'
@@ -107,7 +111,9 @@ public class JsonParser
             }
             else if (json[index] != '}')
             {
-                throw new InvalidOperationException($"Expected ',' or '}}' at position {index}, but found '{json[index]}'.");
+                throw new InvalidOperationException(
+                    $"Expected ',' or '}}' at position {index}, but found '{json[index]}'."
+                );
             }
         }
 
@@ -137,7 +143,9 @@ public class JsonParser
             }
             else if (json[index] != ']')
             {
-                throw new InvalidOperationException($"Expected ',' or ']' at position {index}, but found '{json[index]}'.");
+                throw new InvalidOperationException(
+                    $"Expected ',' or ']' at position {index}, but found '{json[index]}'."
+                );
             }
         }
 
@@ -207,7 +215,16 @@ public class JsonParser
     {
         int startIndex = index;
 
-        while (index < json.Length && (char.IsDigit(json[index]) || json[index] == '-' || json[index] == '.' || json[index] == 'e' || json[index] == 'E'))
+        while (
+            index < json.Length
+            && (
+                char.IsDigit(json[index])
+                || json[index] == '-'
+                || json[index] == '.'
+                || json[index] == 'e'
+                || json[index] == 'E'
+            )
+        )
         {
             index++;
         }
@@ -223,6 +240,8 @@ public class JsonParser
             return doubleValue;
         }
 
-        throw new InvalidOperationException($"Invalid number format at position {startIndex}: {numberString}");
+        throw new InvalidOperationException(
+            $"Invalid number format at position {startIndex}: {numberString}"
+        );
     }
 }

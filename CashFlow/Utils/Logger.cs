@@ -1,17 +1,18 @@
 namespace CashFlow.CashFlow.Utils;
 
-
 public static class Logger
 {
     public static void Debug(string message)
     {
-        if (!IsEnvironmentVariableSet()) return;
+        if (!IsEnvironmentVariableSet())
+            return;
         Log("Debug", message, ConsoleColor.Blue);
     }
 
     public static void Error(string message)
     {
-        if (!IsEnvironmentVariableSet()) return;
+        if (!IsEnvironmentVariableSet())
+            return;
         Log("Error", message, ConsoleColor.Red);
     }
 
@@ -36,11 +37,11 @@ public static class Logger
         Console.Write(prompt + " ");
         Console.ResetColor(); // Reset color to default
         Console.Write(message);
-        
-        if (newline) Console.Write("\n");
-        
+
+        if (newline)
+            Console.Write("\n");
     }
-    
+
     private static bool IsEnvironmentVariableSet()
     {
         string value = Environment.GetEnvironmentVariable("CASHFLOW_DEBUG")!;

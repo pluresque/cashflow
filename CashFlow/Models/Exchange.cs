@@ -13,9 +13,15 @@ public class CurrencyConverter
         this.apiUrl = apiUrl;
     }
 
-    private async Task<double> ConvertCurrency(decimal amount, string fromCurrency, string toCurrency)
+    private async Task<double> ConvertCurrency(
+        decimal amount,
+        string fromCurrency,
+        string toCurrency
+    )
     {
         using HttpClient client = new HttpClient();
+
+        // Only supports https://exchangeratesapi.io/ as of now
         string url = $"{apiUrl}?apiKey={apiKey}&from={fromCurrency}&to={toCurrency}";
         HttpResponseMessage response = await client.GetAsync(url);
 
