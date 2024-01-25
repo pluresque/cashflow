@@ -2,7 +2,7 @@ namespace CashFlow.CashFlow.Models;
 
 using Utils;
 
-abstract class CommandLine
+abstract class Prompt
 {
     protected Dictionary<string, Action<string[]>> commands = null!;
     protected readonly Database database = new();
@@ -25,7 +25,7 @@ abstract class CommandLine
             return false; // Meaning exit
 
         if (!commands.ContainsKey(command))
-            Logger.Info("Invalid command. Type 'help' for a list of commands.");
+            AppLogger.Info("Invalid command. Type 'help' for a list of commands.");
         else
             commands[command](inputParts.Length > 1 ? inputParts[1..] : Array.Empty<string>());
 
@@ -34,7 +34,7 @@ abstract class CommandLine
 
     protected void HelpCommand(string[] args)
     {
-        Logger.Info("Available Commands:");
+        AppLogger.Info("Available Commands:");
         foreach (var cmd in commands.Keys)
         {
             Console.WriteLine($"- {cmd}");

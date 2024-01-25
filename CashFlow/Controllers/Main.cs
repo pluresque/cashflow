@@ -3,7 +3,7 @@ namespace CashFlow.CashFlow.Controllers;
 using Models;
 using Utils;
 
-class App : CommandLine
+class App : Prompt
 {
     public App()
     {
@@ -19,12 +19,12 @@ class App : CommandLine
 
         if (!database.Accounts.Any())
         {
-            Logger.Info("You don't seem to have an account, please create one.");
+            AppLogger.Info("You don't seem to have an account, please create one.");
             CreateAccountCommand();
         }
 
         Console.WriteLine();
-        Logger.Info(
+        AppLogger.Info(
             "For command list you can use `help`.\n"
                 + "To list available accounts - `accounts`.\nSelecting an account - `select`"
         );
@@ -45,19 +45,19 @@ class App : CommandLine
 
     private void ExchangeCommand(string[] args)
     {
-        new CurrencyMenu().Run();
+        new Exchange().Run();
     }
 
     private void SettingsCommand(string[] args)
     {
-        new SettingsMenu().Run();
+        new Settings().Run();
     }
 
     private void AccountsCommand(string[] args)
     {
         if (args.Length >= 2)
         {
-            Logger.Info("Too many arguments");
+            AppLogger.Info("Too many arguments");
             return;
         }
 
@@ -76,7 +76,7 @@ class App : CommandLine
                 CreateAccountCommand();
                 return;
             default:
-                Logger.Info("Invalid command. Type 'help' for a list of commands.");
+                AppLogger.Info("Invalid command. Type 'help' for a list of commands.");
                 return;
         }
     }
@@ -86,7 +86,7 @@ class App : CommandLine
         var accounts = database.Accounts;
         if (accounts.Count == 0)
         {
-            Logger.Info(
+            AppLogger.Info(
                 "There is nothing to select. Please create an account using `account create`"
             );
             return;
@@ -102,7 +102,7 @@ class App : CommandLine
         {
             if (index > accounts.Count || index <= 0)
             {
-                Logger.Info("Account does not exist");
+                AppLogger.Info("Account does not exist");
                 return;
             }
 
@@ -112,29 +112,29 @@ class App : CommandLine
         {
             if (!database.AccountExist(input))
             {
-                Logger.Info("Account does not exist");
+                AppLogger.Info("Account does not exist");
                 return;
             }
 
             accountName = input;
         }
 
-        Logger.Success($"You've chosen an account called {accountName}");
-        new AccountMenu(database.GetAccount(accountName)).Run();
+        AppLogger.Success($"You've chosen an account called {accountName}");
+        new Account(database.GetAccount(accountName)).Run();
     }
 
     private void CreateAccountCommand()
     {
-        string GeneratedName = NamesGenerator.GenerateFunnyName();
+        string GeneratedName = Utils.NameGenerator.GenerateFunnyName();
         string name = ReadInput(
             $"? How should we call this account [{GeneratedName}]:",
             GeneratedName
         );
 
-        if (!database.AddAccount(new Account(name, 0)))
-            Logger.Info("Account already exists.");
+        if (!database.AddAccount(new Models.Account(name, 0)))
+            AppLogger.Info("Account already exists.");
         else
-            Logger.Success("Successfully created an account.");
+            AppLogger.Success("Successfully created an account.");
     }
 
     private void RemoveAccountCommand()
@@ -143,7 +143,7 @@ class App : CommandLine
 
         if (accounts.Count == 0)
         {
-            Logger.Info("There is nothing to delete");
+            AppLogger.Info("There is nothing to delete");
             return;
         }
 
@@ -154,7 +154,7 @@ class App : CommandLine
         {
             if (index > accounts.Count || index == 0)
             {
-                Logger.Info("Account does not exist");
+                AppLogger.Info("Account does not exist");
                 return;
             }
 
@@ -164,7 +164,7 @@ class App : CommandLine
         {
             if (!database.AccountExist(input))
             {
-                Logger.Info("Account does not exist");
+                AppLogger.Info("Account does not exist");
                 return;
             }
 
@@ -172,17 +172,17 @@ class App : CommandLine
         }
 
         database.RemoveAccount(accountName);
-        Logger.Success($"Successfully deleted the account {accountName}");
+        AppLogger.Success($"Successfully deleted the account {accountName}");
     }
 
     private void AvailableAccounts()
     {
         var accounts = database.Accounts;
-        Logger.Info("Available accounts:");
+        AppLogger.Info("Available accounts:");
 
         if (accounts.Count == 0)
         {
-            Logger.Info(
+            AppLogger.Info(
                 "There is nothing to show. Please create an account using `account create`"
             );
             return;
@@ -190,7 +190,7 @@ class App : CommandLine
 
         for (int index = 0; index < accounts.Count; index++)
         {
-            Account account = accounts[index];
+            Models.Account account = accounts[index];
             Console.WriteLine(
                 $"{index + 1}. {account.AccountName} - {account.AccountBalance} PLN "
             );
@@ -198,6 +198,6 @@ class App : CommandLine
 
         Console.WriteLine();
 
-        Logger.Info("Available options:\n" + "- accounts create\n- accounts remove");
+        AppLogger.Info("Available options:\n" + "- accounts create\n- accounts remove");
     }
 }

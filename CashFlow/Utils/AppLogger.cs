@@ -1,6 +1,6 @@
 namespace CashFlow.CashFlow.Utils;
 
-public static class Logger
+public static class AppLogger
 {
     public static void Debug(string message)
     {

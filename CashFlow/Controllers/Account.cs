@@ -4,11 +4,11 @@ namespace CashFlow.CashFlow.Controllers;
 
 using Models;
 
-class AccountMenu : CommandLine
+class Account : Prompt
 {
-    public Account account { get; private set; }
+    public Models.Account account { get; private set; }
 
-    public AccountMenu(Account account)
+    public Account(Models.Account account)
     {
         this.account = account;
 
@@ -38,11 +38,11 @@ class AccountMenu : CommandLine
     
     private void ExchangeCommand(string[] args)
     {
-        new CurrencyMenu().Run();
+        new Exchange().Run();
     }
 
     private void BalanceCommand(string[] args)
     {
-        Logger.Info($"Account balance: {account.AccountBalance} PLN");
+        AppLogger.Info($"Account balance: {account.AccountBalance} PLN");
     }
 }

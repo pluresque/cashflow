@@ -1,6 +1,6 @@
 namespace CashFlow.CashFlow.Utils;
 
-public static class NamesGenerator
+public static class NameGenerator
 {
     private static Random random = new();
 
