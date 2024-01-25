@@ -13,7 +13,8 @@ class App : CommandLine
             { "exit", HelpCommand },
             { "select", SelectCommand },
             { "accounts", AccountsCommand },
-            { "settings", SettingsCommand }
+            { "settings", SettingsCommand },
+            { "exchange", ExchangeCommand }
         };
 
         if (!database.Accounts.Any())
@@ -40,6 +41,11 @@ class App : CommandLine
             if (!ParseInput(input))
                 break;
         }
+    }
+
+    private void ExchangeCommand(string[] args)
+    {
+        new CurrencyMenu().Run();
     }
 
     private void SettingsCommand(string[] args)

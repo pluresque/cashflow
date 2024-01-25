@@ -15,6 +15,9 @@ class SettingsMenu : CommandLine
             { "set", SetCommand },
             { "show", ShowCommand },
         };
+        
+        Console.WriteLine("---------");
+        HelpCommand(Array.Empty<string>());
     }
 
     public override void Run()
