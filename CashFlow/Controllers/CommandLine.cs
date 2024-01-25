@@ -89,7 +89,7 @@ class App : CommandLine
             { "accounts", AccountsCommand },
         };
         
-        if (database.GetKey("accounts") is null)
+        if (!database.Accounts.Any())
         {
             Logger.Info("You don't seem to have an account, please create one.");
             CreateAccountCommand();
@@ -144,8 +144,8 @@ class App : CommandLine
     
     private void SelectCommand(string[] args)
     {
-        var accounts = database.GetKey("accounts");
-        if (accounts is null || accounts.Count == 0)
+        var accounts = database.Accounts;
+        if (accounts.Count == 0)
         {
             Logger.Info("There is nothing to select. Please create an account using `account create`");
             return;
@@ -162,11 +162,11 @@ class App : CommandLine
                 return;
             }
             
-            accountName = accounts.Keys.ToList()[index - 1];
+            accountName = accounts[index - 1].Name;
         }
         else
         {
-            if (!accounts.ContainsKey(input))
+            if (!database.AccountExist(input))
             {
                 Logger.Info("Account does not exist");
                 return; 
@@ -183,31 +183,18 @@ class App : CommandLine
     {
         string GeneratedName = NamesGenerator.GenerateFunnyName();
         string name = ReadInput($"? How should we call this account [{GeneratedName}]:", GeneratedName);
-        
-        var accounts = database.GetAccounts();
-        
-        if (accounts is null || accounts.Count == 0)
-        {
-            database.SetKey("accounts", new Dictionary<string, object> { { name, 0 } });
-        } else if (accounts.ContainsKey(name))
-        {
-            Logger.Info("This account already exists.");
-            return;
-        }
+
+        if (!database.AddAccount(new Account(name, 0)))
+            Logger.Info("Account already exists.");
         else
-        {
-            accounts.Add(name, 0);
-            database.SetKey("accounts", accounts);
-        }
-        
-        Logger.Success("Successfully created an account.");
+            Logger.Success("Successfully created an account.");
     }
 
     private void RemoveAccountCommand()
     {
-        var accounts = database.GetAccounts();
+        var accounts = database.Accounts;
         
-        if (accounts is null || accounts.Count <= 0)
+        if (accounts.Count == 0)
         {
             Logger.Info("There is nothing to delete");
             return;
@@ -216,20 +203,19 @@ class App : CommandLine
         string input = ReadInput($"? What account should be deleted (type account id or name)", "");
         string accountName;
         
-        
         if (int.TryParse(input, out int index))
         {
-            if (index > accounts.Count || index <= 0)
+            if (index > accounts.Count || index == 0)
             {
                 Logger.Info("Account does not exist");
                 return;
             }
             
-            accountName = accounts.Keys.ToList()[index - 1];
+            accountName = accounts[index - 1].Name;
         }
         else
         {
-            if (!accounts.ContainsKey(input))
+            if (!database.AccountExist(input))
             {
                 Logger.Info("Account does not exist");
                 return; 
@@ -237,29 +223,27 @@ class App : CommandLine
 
             accountName = input;
         }
-        
-        accounts.Remove(accountName);
-        database.SetKey("accounts", accounts);
-                
+
+        database.RemoveAccount(accountName);
         Logger.Success($"Successfully deleted the account {accountName}");
     }
 
     private void AvailableAccounts()
     {
-        var accounts = database.GetAccounts();
+        var accounts = database.Accounts;
         Logger.Info("Available accounts:");
         
-        if (accounts is null || accounts.Count == 0)
+        if (accounts.Count == 0)
         {
             Logger.Info("There is nothing to show. Please create an account using `account create`");
             return;
         }
-        
-        foreach (string key in accounts!.Keys)
+
+
+        for (int index = 0; index < accounts.Count; index++)
         {
-            var value = accounts[key];
-            var index = accounts.Keys.ToList().IndexOf(key) + 1;
-            Console.WriteLine($"{index}. {key}: {value} PLN");
+            Account account = accounts[index];
+            Console.WriteLine($"{index}. {account.AccountName} - {account.AccountBalance} PLN ");
         }
         
         Console.WriteLine();

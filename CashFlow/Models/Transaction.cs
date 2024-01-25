@@ -1,6 +1,6 @@
 namespace CashFlow.CashFlow.Models;
 
-public class Transaction: DatabaseObject
+public class Transaction
 {
     // Properties
     private double Amount;
@@ -37,5 +37,5 @@ public class Transaction: DatabaseObject
         return new Transaction(amount, accountName) { TransactionTime = transactionTime };
     }
 
-    public string Name() => AccountName;
+    public string Name => AccountName;
 }

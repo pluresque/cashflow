@@ -1,10 +1,10 @@
 namespace CashFlow.CashFlow.Models;
 
-public class Account : DatabaseObject
+public class Account
 {
     // Properties
-    private string AccountName;
-    private double AccountBalance;
+    public string AccountName { get; private set; }
+    public double AccountBalance { get; private set; }
 
     // Constructor
     public Account(string accountName, double accountBalance)
@@ -34,5 +34,5 @@ public class Account : DatabaseObject
         // If the input format is incorrect, return null or throw an exception based on your preference.
     }
 
-    public string Name() => AccountName;
+    public string Name => AccountName;
 }
