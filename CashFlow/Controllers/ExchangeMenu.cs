@@ -4,11 +4,11 @@ namespace CashFlow.CashFlow.Controllers;
 
 using Models;
 
-class Exchange : Prompt
+class ExchangeMenu : Prompt
 {
     private CurrencyConverter converter = new CurrencyConverter("", "");
     
-    public Exchange()
+    public ExchangeMenu()
     {
         commands = new Dictionary<string, Action<string[]>>
         {

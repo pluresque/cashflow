@@ -23,11 +23,7 @@ class App : Prompt
             CreateAccountCommand();
         }
 
-        Console.WriteLine();
-        AppLogger.Info(
-            "For command list you can use `help`.\n"
-                + "To list available accounts - `accounts`.\nSelecting an account - `select`"
-        );
+        HelpCommand(Array.Empty<string>());
     }
 
     public override void Run()
@@ -45,12 +41,12 @@ class App : Prompt
 
     private void ExchangeCommand(string[] args)
     {
-        new Exchange().Run();
+        new ExchangeMenu().Run();
     }
 
     private void SettingsCommand(string[] args)
     {
-        new Settings().Run();
+        new SettingsMenu().Run();
     }
 
     private void AccountsCommand(string[] args)
@@ -120,7 +116,7 @@ class App : Prompt
         }
 
         AppLogger.Success($"You've chosen an account called {accountName}");
-        new Account(database.GetAccount(accountName)).Run();
+        new AccountMenu(database.GetAccount(accountName)).Run();
     }
 
     private void CreateAccountCommand()

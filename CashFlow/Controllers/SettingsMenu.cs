@@ -4,9 +4,9 @@ namespace CashFlow.CashFlow.Controllers;
 
 using Models;
 
-class Settings : Prompt
+class SettingsMenu : Prompt
 {
-    public Settings()
+    public SettingsMenu()
     {
         commands = new Dictionary<string, Action<string[]>>
         {

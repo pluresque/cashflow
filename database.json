@@ -1,7 +1,15 @@
 {
-  "accounts": [],
-  "transactions": [],
+  "accounts": [
+    "work:500",
+    "personal:130",
+    "Happy Penguin:0"
+  ],
+  "transactions": [
+    "personal:a coffee:50:2024-01-25 18/07/12",
+    "work:notebook:4000:2024-01-24 13/05/57"
+  ],
   "settings": {
-    "prefferedCurrency": "PLN"
+    "preferredCurrency": "USD",
+    "transactionsPerPage": 30
   }
 }

@@ -24,3 +24,9 @@ public class UnknownCurrency : Exception
     public UnknownCurrency(string message)
         : base(message) { }
 }
+
+public class BadDatabaseFile : Exception
+{
+    public BadDatabaseFile(string message)
+        : base(message) { }
+}

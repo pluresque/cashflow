@@ -13,6 +13,14 @@ public class Account
         AccountBalance = accountBalance;
     }
 
+    public void UpdateAccountBalance(double value)
+    {
+        if (value < 0)
+            throw new ArgumentException("Can't be less than zero");
+        
+        AccountBalance = value;
+    }
+    
     // Function to convert object to string
     public override string ToString()
     {
