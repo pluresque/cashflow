@@ -144,7 +144,7 @@ class App : Prompt
         string input = ReadInput("? What amount should be converted:", "");
 
         // Check if the provided input is a valid integer
-        if (!int.TryParse(input, out int value))
+        if (!double.TryParse(input, out double value))
         {
             PrettyPrint.Info("Not an integer");
             return;

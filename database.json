@@ -57,6 +57,6 @@
   ],
   "settings": {
     "preferredCurrency": "PLN",
-    "transactionsPerPage": 30
+    "transactionsPerPage": 20
   }
 }

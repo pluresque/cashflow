@@ -168,7 +168,7 @@ class Database
     public void SetTransactionsPerPage(int newPerPageValue)
     {
         // Check if the new value is within the valid range
-        if (newPerPageValue < 30 || newPerPageValue > 100)
+        if (newPerPageValue < 10 || newPerPageValue > 100)
         {
             // Throw an exception if the value is out of range
             throw new TransactionPerPageTooBig("Invalid value for transactionsPerPage setting");
@@ -232,7 +232,7 @@ class Database
     
     public object PreferredCurrency => Settings["preferredCurrency"];
     
-    public object TransactionsPerPage => Settings["transactionsPerPage"];
+    public int TransactionsPerPage => (int)(long)Settings["transactionsPerPage"];
 }
 
 public class DatabaseSchema

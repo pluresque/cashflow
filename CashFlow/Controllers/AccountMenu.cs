@@ -59,6 +59,11 @@ class AccountMenu : Prompt
                 // Display information about the transaction
                 Console.WriteLine($"{index}. {transaction.Name} - {transaction.Amount} {database.PreferredCurrency} " +
                                   $"at {transaction.TransactionTime}");
+
+                if (index >= database.TransactionsPerPage)
+                {
+                    break;
+                }
             }
         }
     }
