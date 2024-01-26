@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace CashFlow.CashFlow.Models;
 
 using Utils;
@@ -5,75 +7,86 @@ using Newtonsoft.Json;
 
 class Database
 {
-    public List<Account> accounts = new List<Account>();
-    public List<Transaction> transactions = new List<Transaction>();
-    public Dictionary<string, object> settings = new Dictionary<string, object>();
+    public List<Account> Accounts { get; private set; }
+    public List<Transaction> Transactions { get; private set; }
 
-    public Database()
+    public string FilePath { get; private set; }
+    public Dictionary<string, object> Settings { get; private set; }
+
+    public Database(string filePath)
     {
+        // Create empty lists in order to populate them later on
+        Accounts = new();
+        Transactions = new();
+        
+        // File path to database
+        FilePath = filePath;
+        
+        // Update database
         UpdateDatabase();
     }
 
-    public void UpdateDatabase()
+    private void UpdateDatabase()
     {
-        accounts = new List<Account>();
-        transactions = new List<Transaction>();
-        settings = new Dictionary<string, object>();
-        
         // Read JSON from file
-        string jsonText = File.ReadAllText("database.json");
+        string jsonText = File.ReadAllText(FilePath);
 
         // Deserialize JSON to object
         DatabaseSchema? databaseObject = JsonConvert.DeserializeObject<DatabaseSchema>(jsonText);
-        if (databaseObject is null)
-        {
-            throw new BadDatabaseFile("File does not contain all needed keys");
-        }
 
-        foreach (string account in databaseObject.accounts)
-        {
-            accounts.Add(Account.FromString(account));
-        }
+        // Populate accounts from the deserialized data
+        if (databaseObject == null) 
+            throw new DatabaseInitializationException("Not all needed keys are in database");
         
-        foreach (string transaction in databaseObject.transactions)
+        foreach (string accountString in databaseObject.accounts)
         {
-            transactions.Add(Transaction.FromString(transaction));
+            Accounts.Add(Account.FromString(accountString));
         }
 
-        settings = databaseObject.settings;
+        // Populate transactions from the deserialized data
+        foreach (string transactionString in databaseObject.transactions)
+        {
+            Transactions.Add(Transaction.FromString(transactionString));
+        }
+
+        // Populate settings from the deserialized data
+        Settings = databaseObject.settings;
     }
 
-    public void SaveDatabase()
+    private void SaveDatabase()
     {
-        List<string> accountsList = new List<string>();
-        foreach (Account account in accounts)
-        {
-            accountsList.Add(account.ToString());
-        }
-        
-        List<string> transactionList = new List<string>();
-        foreach (Transaction transaction in transactions)
-        {
-            transactionList.Add(transaction.ToString());
-        }
-        
+        // Convert accounts to string representation
+        List<string> accountsList = Accounts.Select(account => account.ToString()).ToList();
+
+        // Convert transactions to string representation
+        List<string> transactionList = Transactions.Select(transaction => transaction.ToString()).ToList();
+
+        // Create a DatabaseSchema object with the collected data
         DatabaseSchema databaseObject = new DatabaseSchema()
         {
             accounts = accountsList,
             transactions = transactionList,
-            settings = settings
+            settings = Settings
         };
-        
-        // Convert the object to a JSON string
-        string jsonString = JsonConvert.SerializeObject(databaseObject, Formatting.Indented);
-        
-        // Write the JSON string to a file
-        File.WriteAllText("database.json", jsonString);
+
+        try
+        {
+            // Convert the object to a JSON string with indentation for readability
+            string jsonString = JsonConvert.SerializeObject(databaseObject, Formatting.Indented);
+
+            // Write the JSON string to the database file
+            File.WriteAllText(FilePath, jsonString);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions related to file writing or serialization
+            throw new DatabaseSaveException("Error during database save");
+        }
     }
     
     public Account GetAccount(string name)
     {
-        foreach (Account account in accounts)
+        foreach (Account account in Accounts)
         {
             if (account.Name == name)
                 return account;
@@ -84,11 +97,11 @@ class Database
 
     public bool UpdateAccount(Account account)
     {
-        for (int i = 0; i < accounts.Count; i++)
+        for (int i = 0; i < Accounts.Count; i++)
         {
-            if (accounts[i].Name != account.Name)
+            if (Accounts[i].Name != account.Name)
                 continue;
-            accounts[i] = account;
+            Accounts[i] = account;
             SaveDatabase();
             return true;
         }
@@ -98,9 +111,9 @@ class Database
 
     public bool RemoveAccount(string name)
     {
-        for (int i = 0; i < accounts.Count; i++)
+        for (int i = 0; i < Accounts.Count; i++)
         {
-            if (accounts[i].Name != name)
+            if (Accounts[i].Name != name)
                 continue;
             RemoveAccountAt(i);
             SaveDatabase();
@@ -114,7 +127,7 @@ class Database
         if (AccountExist(account.Name))
             return false;
 
-        accounts.Add(account);
+        Accounts.Add(account);
         SaveDatabase();
         return true;
     }
@@ -124,28 +137,28 @@ class Database
         if (value is < 30 or > 100)
             throw new TransactionPerPageTooBig("Too high/low value for transactionPerPage setting");
 
-        settings["transactionsPerPage"] = value;
+        Settings["transactionsPerPage"] = value;
         SaveDatabase();
     }
 
     public void SetPreferredCurrency(string currency)
     {
-        if (currency is not ("PLN" or "USD" or "EUR"))
+        if (!CheckCurrency.IsValidCurrency(currency))
             throw new UnknownCurrency("This currency is not supported");
 
-        settings["preferredCurrency"] = currency;
+        Settings["preferredCurrency"] = currency.ToUpper();
         SaveDatabase();
     }
 
     public void AddTransaction(Transaction transaction)
     {
-        transactions.Add(transaction);
+        Transactions.Add(transaction);
         SaveDatabase();
     }
 
     public void RemoveTransactionAt(int index)
     {
-        transactions.RemoveAt(index);
+        Transactions.RemoveAt(index);
         SaveDatabase();
     }
 
@@ -155,12 +168,11 @@ class Database
         SaveDatabase();
     }
 
-    public bool AccountExist(string name) => accounts.Any(acc => acc.Name == name);
-
-    public List<Account> Accounts => accounts;
-    public List<Transaction> Transactions => transactions;
-    public object preferredCurrency => settings["preferredCurrency"];
-    public object transactionsPerPage => settings["transactionsPerPage"];
+    public bool AccountExist(string name) => Accounts.Any(acc => acc.Name == name);
+    public bool AccountsEmpty() => Accounts.Count == 0;
+    
+    public object preferredCurrency => Settings["preferredCurrency"];
+    public object transactionsPerPage => Settings["transactionsPerPage"];
 }
 
 public class DatabaseSchema

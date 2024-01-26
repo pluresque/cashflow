@@ -25,8 +25,14 @@ public class UnknownCurrency : Exception
         : base(message) { }
 }
 
-public class BadDatabaseFile : Exception
+public class DatabaseSaveException : Exception
 {
-    public BadDatabaseFile(string message)
+    public DatabaseSaveException(string message)
+        : base(message) { }
+}
+
+public class DatabaseInitializationException : Exception
+{
+    public DatabaseInitializationException(string message)
         : base(message) { }
 }

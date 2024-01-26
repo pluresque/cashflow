@@ -6,25 +6,16 @@ public static class NameGenerator
 
     private static string[] firstWords =
     {
-        "Silly",
-        "Happy",
-        "Angry",
-        "Crazy",
-        "Funny",
-        "Giggly",
-        "Cheerful",
-        "Playful"
+        "Silly", "Happy", "Angry",
+        "Crazy", "Funny", "Giggly",
+        "Cheerful", "Playful"
     };
+    
     private static string[] secondWords =
     {
-        "Cat",
-        "Dog",
-        "Dinosaur",
-        "Elephant",
-        "Monkey",
-        "Giraffe",
-        "Penguin",
-        "Cockroach"
+        "Cat", "Dog", "Dinosaur",
+        "Elephant", "Monkey", "Giraffe",
+        "Penguin", "Cockroach"
     };
 
     public static string GenerateFunnyName()

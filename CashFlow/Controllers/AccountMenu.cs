@@ -12,13 +12,12 @@ class AccountMenu : Prompt
     {
         this.account = account;
 
-        commands = new Dictionary<string, Action<string[]>>
+        Commands = new Dictionary<string, Action<string[]>>
         {
             { "help", HelpCommand },
             { "exit", HelpCommand },
             { "balance", BalanceCommand },
             { "transactions", TransactionCommand },
-            { "exchange", ExchangeCommand },
             { "topup", TopUpCommand}
             
         };
@@ -37,11 +36,26 @@ class AccountMenu : Prompt
         }
     }
 
+    private void Transactions()
+    {
+        
+    }
+
+    private void TransactionCreate()
+    {
+        
+    }
+
+    private void TransactionRemove()
+    {
+        
+    }
+    
     private void TransactionCommand(string[] args)
     {
         AppLogger.Info("All transactions made by this account:");
 
-        foreach (Transaction transaction in database.transactions)
+        foreach (Transaction transaction in database.Transactions)
         {
             if (transaction.AccountName == account.AccountName)
                 Console.WriteLine($"- {transaction.Name} {transaction.Amount} {database.preferredCurrency} " +
@@ -69,11 +83,6 @@ class AccountMenu : Prompt
         
         account.UpdateAccountBalance(amount);
         AppLogger.Success("Successfully updated account balance");
-    }
-    
-    private void ExchangeCommand(string[] args)
-    {
-        new ExchangeMenu().Run();
     }
 
     private void BalanceCommand(string[] args)

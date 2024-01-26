@@ -4,8 +4,8 @@ using Utils;
 
 abstract class Prompt
 {
-    protected Dictionary<string, Action<string[]>> commands = null!;
-    protected readonly Database database = new();
+    protected Dictionary<string, Action<string[]>> Commands = null!;
+    protected readonly Database database = new("database.json");
 
     public abstract void Run();
 
@@ -24,10 +24,10 @@ abstract class Prompt
         if (command == "exit")
             return false; // Meaning exit
 
-        if (!commands.ContainsKey(command))
+        if (!Commands.ContainsKey(command))
             AppLogger.Info("Invalid command. Type 'help' for a list of commands.");
         else
-            commands[command](inputParts.Length > 1 ? inputParts[1..] : Array.Empty<string>());
+            Commands[command](inputParts.Length > 1 ? inputParts[1..] : Array.Empty<string>());
 
         return true; // Continue
     }
@@ -35,7 +35,7 @@ abstract class Prompt
     protected void HelpCommand(string[] args)
     {
         AppLogger.Info("Available Commands:");
-        foreach (var cmd in commands.Keys)
+        foreach (var cmd in Commands.Keys)
         {
             Console.WriteLine($"- {cmd}");
         }
