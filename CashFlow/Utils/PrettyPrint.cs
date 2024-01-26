@@ -12,7 +12,7 @@ public static class PrettyPrint
         Log("\u2714", message, ConsoleColor.Green);
     }
 
-    public static void Log(string prompt, string message, ConsoleColor color, bool newline = true)
+    private static void Log(string prompt, string message, ConsoleColor color, bool newline = true)
     {
         Console.ForegroundColor = color;
         Console.Write(prompt + " ");
