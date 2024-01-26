@@ -10,7 +10,7 @@ public class CurrencyConverter
     // Offline exchange rates
     private const double UsdToPlnRate = 4.0;
     private const double EurToPlnRate = 4.5;
-
+    
     public CurrencyConverter(string apiKey, string apiUrl)
     {
         this.apiKey = apiKey;
@@ -20,7 +20,6 @@ public class CurrencyConverter
     public double OfflineConvertCurrency(double amount, string fromCurrency, string toCurrency)
     {
         // Convert input amount to PLN (Polish Zloty)
-
         double plnAmount = fromCurrency.ToUpper() switch
         {
             "PLN" => amount,
@@ -30,7 +29,6 @@ public class CurrencyConverter
         };
 
         // Convert PLN amount to the target currency
-
         double result = toCurrency.ToUpper() switch
         {
             "PLN" => plnAmount,
@@ -46,17 +44,33 @@ public class CurrencyConverter
     {
         using HttpClient client = new HttpClient();
 
-        // Only supports https://exchangeratesapi.io/ as of now
+        // Construct the API request URL
         string url = $"{apiUrl}?apiKey={apiKey}&from={fromCurrency}&to={toCurrency}";
+
+        // Send a GET request to the exchange rates API
         HttpResponseMessage response = await client.GetAsync(url);
 
+        // Check if the API request was successful
         if (response.IsSuccessStatusCode)
         {
+            // Read the response content
             string result = await response.Content.ReadAsStringAsync();
-            decimal exchangeRate = decimal.Parse(result);
-            return (double)(amount * exchangeRate);
+
+            // Parse the exchange rate from the response
+            if (decimal.TryParse(result, out decimal exchangeRate))
+            {
+                // Calculate and return the converted amount
+                return (double)(amount * exchangeRate);
+            }
+            else
+            {
+                // Handle the case where the response content cannot be parsed
+                throw new ApiException("Failed to parse the exchange rate from the API response.");
+            }
         }
 
+        // Throw an exception if the API request was not successful
         throw new ApiException($"{response.StatusCode} - {response.ReasonPhrase}");
     }
+
 }

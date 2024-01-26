@@ -2,46 +2,56 @@ namespace CashFlow.CashFlow.Models;
 
 public class Account
 {
-    // Properties
     public string AccountName { get; private set; }
     public double AccountBalance { get; private set; }
-
-    // Constructor
+    
     public Account(string accountName, double accountBalance)
     {
+        // Set the account name and balance during object creation
         AccountName = accountName;
         AccountBalance = accountBalance;
     }
 
-    public void UpdateAccountBalance(double value)
+
+    public void UpdateAccountBalance(double newBalance)
     {
-        if (value < 0)
-            throw new ArgumentException("Can't be less than zero");
-        
-        AccountBalance = value;
+        // Check if the new balance is valid (not less than zero)
+        if (newBalance < 0)
+        {
+            throw new ArgumentException("Account balance can't be less than zero");
+        }
+
+        // Update the account balance
+        AccountBalance = newBalance;
     }
     
-    // Function to convert object to string
     public override string ToString()
     {
+        // Function to convert object to string
         return $"{AccountName}:{AccountBalance}";
     }
-
-    // Function to create an object from a string
+    
     public static Account FromString(string input)
     {
+        // Split the input string into parts using ':'
         string[] parts = input.Split(':');
+
+        // Check if the input has the expected format
         if (parts.Length != 2)
+        {
             throw new ArgumentException("Invalid input format for creating Account object");
+        }
+
+        // Extract account name and balance from the parts
         string accountName = parts[0];
 
+        // Check if parsing the balance as double is successful
         if (!double.TryParse(parts[1], out var accountBalance))
+        {
             throw new ArgumentException("Invalid input format for creating Account object");
+        }
 
+        // Create and return a new Account object
         return new Account(accountName, accountBalance);
-
-        // If the input format is incorrect, return null or throw an exception based on your preference.
     }
-
-    public string Name => AccountName;
 }

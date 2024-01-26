@@ -11,33 +11,55 @@ abstract class Prompt
 
     protected static string ReadInput(string prompt, string defaultValue)
     {
+        // Display the prompt and read the user's input
         Console.Write(prompt + " ");
         var answer = Console.ReadLine();
+        
+        // Use the defaultValue if the user input is null, empty, or consists of whitespace
         return string.IsNullOrWhiteSpace(answer) ? defaultValue : answer.Trim();
     }
-
+    
     protected bool ParseInput(string input)
     {
+        // Split the input into parts
         string[] inputParts = input.Split(' ');
+
+        // Extract the command (first part) and convert it to lowercase
         string command = inputParts[0].ToLower();
 
+        // Check if the command is "exit"
         if (command == "exit")
-            return false; // Meaning exit
+        {
+            // Return false to indicate that the program should exit
+            return false;
+        }
 
+        // Check if the command is valid
         if (!Commands.ContainsKey(command))
-            AppLogger.Info("Invalid command. Type 'help' for a list of commands.");
+        {
+            // Inform the user about an invalid command
+            PrettyPrint.Info("Invalid command. Type 'help' for a list of commands.");
+        }
         else
+        {
+            // Execute the command with its arguments
             Commands[command](inputParts.Length > 1 ? inputParts[1..] : Array.Empty<string>());
+        }
 
-        return true; // Continue
+        // Return true to indicate that the program should continue
+        return true;
     }
 
     protected void HelpCommand(string[] args)
     {
-        AppLogger.Info("Available Commands:");
+        // Display a header for available commands
+        PrettyPrint.Info("Available Commands:");
+
+        // Iterate through each command and print its name
         foreach (var cmd in Commands.Keys)
         {
             Console.WriteLine($"- {cmd}");
         }
     }
+
 }

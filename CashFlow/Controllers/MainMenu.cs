@@ -25,7 +25,7 @@ class App : Prompt
         if (!database.Accounts.Any())
         {
             // Log a message and prompt the user to create an account
-            AppLogger.Info("You don't seem to have an account, please create one.");
+            PrettyPrint.Info("You don't seem to have an account, please create one.");
             CreateAccountCommand();
         }
         
@@ -54,7 +54,7 @@ class App : Prompt
     private void SettingsCommand(string[] args)
     {
         // Display available settings information
-        AppLogger.Info(
+        PrettyPrint.Info(
             "Available settings:\n"
             + "1. transactionsPerPage: int (min: 10, max: 100, default: 30): changes trans. per one page\n"
             + "2. preferredCurrency: string (PLN, USD, EUR, default: PLN): change default currency\n"
@@ -76,7 +76,7 @@ class App : Prompt
                 break;
             default:
                 // Display an information message for an unknown choice
-                AppLogger.Info("Unknown choice");
+                PrettyPrint.Info("Unknown choice");
                 break;
         }
     }
@@ -92,18 +92,18 @@ class App : Prompt
             // Check if the value is within the valid range
             if (value < 10 || value > 100)
             {
-                AppLogger.Info("Too high/low value. Minimum is 10 and maximum is 100");
+                PrettyPrint.Info("Too high/low value. Minimum is 10 and maximum is 100");
                 return;
             }
 
             // Update the transactions per page setting in the database
             database.SetTransactionsPerPage(value);
-            AppLogger.Success($"Successfully changed it to {value}");
+            PrettyPrint.Success($"Successfully changed it to {value}");
         }
         else
         {
             // Display an information message for an invalid input
-            AppLogger.Info("Invalid input. Please enter a valid integer.");
+            PrettyPrint.Info("Invalid input. Please enter a valid integer.");
         }
     }
 
@@ -117,18 +117,18 @@ class App : Prompt
         {
             // Update the preferred currency setting in the database
             database.SetPreferredCurrency(currency);
-            AppLogger.Success($"Successfully changed it to {currency}");
+            PrettyPrint.Success($"Successfully changed it to {currency}");
         }
         else
         {
             // Display an information message for an unsupported currency
-            AppLogger.Info("This currency is not supported");
+            PrettyPrint.Info("This currency is not supported");
         }
     }
     
     private void ExchangeCommand(string[] args)
     {
-        AppLogger.Info(
+        PrettyPrint.Info(
             $"Current exchange rates:\n"
             + $"- 1 USD to PLN {Converter.OfflineConvertCurrency(1, "USD", "PLN")}\n"
             + $"- 1 EUR to PLN {Converter.OfflineConvertCurrency(1, "EUR", "PLN")}"
@@ -138,7 +138,7 @@ class App : Prompt
     private void ConvertCommand(string[] args)
     {
         // Display available currencies
-        AppLogger.Info("Available currencies: PLN, USD, EUR:\n");
+        PrettyPrint.Info("Available currencies: PLN, USD, EUR:\n");
 
         // Prompt the user to input the amount to be converted
         string input = ReadInput("? What amount should be converted:", "");
@@ -146,7 +146,7 @@ class App : Prompt
         // Check if the provided input is a valid integer
         if (!int.TryParse(input, out int value))
         {
-            AppLogger.Info("Not an integer");
+            PrettyPrint.Info("Not an integer");
             return;
         }
 
@@ -159,12 +159,12 @@ class App : Prompt
         // Check if the provided currencies are valid
         if (!CheckCurrency.IsValidCurrency(toCurrency) || !CheckCurrency.IsValidCurrency(fromCurrency))
         {
-            AppLogger.Info("One or both of the currencies are not supported");
+            PrettyPrint.Info("One or both of the currencies are not supported");
             return;
         }
 
         // Perform the currency conversion and display the result
-        AppLogger.Info($"{value} {fromCurrency} to {toCurrency} = " +
+        PrettyPrint.Info($"{value} {fromCurrency} to {toCurrency} = " +
                        $"{Converter.OfflineConvertCurrency(value, fromCurrency, toCurrency)}");
     }
 
@@ -174,7 +174,7 @@ class App : Prompt
         {
             // Check if there are too many arguments
             case >= 2:
-                AppLogger.Info("Too many arguments");
+                PrettyPrint.Info("Too many arguments");
                 break;
             // Check if no arguments are provided, show all accounts then
             case 0:
@@ -192,7 +192,7 @@ class App : Prompt
                         break;
                     default:
                         // Display an error message for an invalid command
-                        AppLogger.Info("Invalid command. Type 'help' for a list of commands.");
+                        PrettyPrint.Info("Invalid command. Type 'help' for a list of commands.");
                         break;
                 }
 
@@ -208,7 +208,7 @@ class App : Prompt
         // Check if there are no accounts to select
         if (database.AccountsEmpty())
         {
-            AppLogger.Info("There is nothing to select. Please create an account using `account create`");
+            PrettyPrint.Info("There is nothing to select. Please create an account using `account create`");
             return;
         }
 
@@ -226,19 +226,19 @@ class App : Prompt
             // Check if the index is within the valid range
             if (index > accounts.Count || index <= 0)
             {
-                AppLogger.Info("Account does not exist");
+                PrettyPrint.Info("Account does not exist");
                 return;
             }
             
             // Get the account name based on the selected index
-            accountName = accounts[index - 1].Name;
+            accountName = accounts[index - 1].AccountName;
         }
         else
         {
             // Check if the account with the provided name exists
             if (!database.AccountExist(input))
             {
-                AppLogger.Info("Account does not exist");
+                PrettyPrint.Info("Account does not exist");
                 return;
             }
             
@@ -247,7 +247,7 @@ class App : Prompt
         }
         
         // Display a success message with the selected account name
-        AppLogger.Success($"You've chosen an account called {accountName}");
+        PrettyPrint.Success($"You've chosen an account called {accountName}");
         
         // Run the menu for the selected account
         new AccountMenu(database.GetAccount(accountName)).Run();
@@ -267,11 +267,11 @@ class App : Prompt
         // Attempt to add the new account to the database
         if (!database.AddAccount(new Account(name, 0)))
         {
-            AppLogger.Info("Account already exists.");
+            PrettyPrint.Info("Account already exists.");
         }
         else
         {
-            AppLogger.Success("Successfully created an account.");
+            PrettyPrint.Success("Successfully created an account.");
         }
     }
 
@@ -283,7 +283,7 @@ class App : Prompt
         // Check if there are no accounts to delete
         if (database.AccountsEmpty())
         {
-            AppLogger.Info("There is nothing to delete");
+            PrettyPrint.Info("There is nothing to delete");
             return;
         }
 
@@ -297,19 +297,19 @@ class App : Prompt
             // Check if the index is within the valid range
             if (index > accounts.Count || index == 0)
             {
-                AppLogger.Info("Account does not exist");
+                PrettyPrint.Info("Account does not exist");
                 return;
             }
 
             // Get the account name based on the selected index
-            accountName = accounts[index - 1].Name;
+            accountName = accounts[index - 1].AccountName;
         }
         else
         {
             // Check if the account with the provided name exists
             if (!database.AccountExist(input))
             {
-                AppLogger.Info("Account does not exist");
+                PrettyPrint.Info("Account does not exist");
                 return;
             }
 
@@ -319,7 +319,7 @@ class App : Prompt
 
         // Remove the selected account from the database
         database.RemoveAccount(accountName);
-        AppLogger.Success($"Successfully deleted the account {accountName}");
+        PrettyPrint.Success($"Successfully deleted the account {accountName}");
     }
 
     private void AvailableAccounts()
@@ -328,12 +328,12 @@ class App : Prompt
         var accounts = database.Accounts;
 
         // Display a header for available accounts
-        AppLogger.Info("Available accounts:");
+        PrettyPrint.Info("Available accounts:");
 
         // Check if there are no accounts to show
         if (database.AccountsEmpty())
         {
-            AppLogger.Info("There is nothing to show. Please create an account using `account create`");
+            PrettyPrint.Info("There is nothing to show. Please create an account using `account create`");
             return;
         }
 
@@ -342,13 +342,13 @@ class App : Prompt
         {
             Account account = accounts[index];
             Console.WriteLine($"{index + 1}. {account.AccountName} - {account.AccountBalance} " +
-                              $"{database.preferredCurrency} ");
+                              $"{database.PreferredCurrency} ");
         }
 
         // Add an empty line for better readability
         Console.WriteLine();
 
         // Display available options for the user
-        AppLogger.Info("Available options:\n" + "- accounts create\n- accounts remove");
+        PrettyPrint.Info("Available options:\n" + "- accounts create\n- accounts remove");
     }
 }

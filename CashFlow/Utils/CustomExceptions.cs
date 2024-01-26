@@ -1,6 +1,5 @@
 namespace CashFlow.CashFlow.Utils;
 
-// Custom exception for API communication errors
 public class ApiException : Exception
 {
     public ApiException(string message)

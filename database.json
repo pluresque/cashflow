@@ -6,7 +6,6 @@
   ],
   "transactions": [
     "Personal:groceries:75:2024-01-10 08/14/22",
-    "Work:laptop:2500:2024-01-14 18/45/59",
     "Personal:dinner with friends:120:2024-01-08 11/32/15",
     "Work:printer ink:50:2024-01-12 22/21/37",
     "Personal:new headphones:150:2024-01-09 14/09/54",
@@ -53,8 +52,8 @@
     "Work:office party expenses:300:2024-01-12 15/14/11",
     "Personal:online course:80:2024-01-13 09/24/37",
     "Work:professional development book:25:2024-01-12 16/59/02",
-    "Personal:shopping spree:200:2024-01-13 11/35/28",
-    "Work:office renovation:1000:2024-01-12 18/13/53"
+    "Work:client lunch:30:2024-01-26 08/04/43",
+    "Work:work expenses:10,5:2024-01-26 08/30/15"
   ],
   "settings": {
     "preferredCurrency": "PLN",

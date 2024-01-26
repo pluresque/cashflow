@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace CashFlow.CashFlow.Models;
 
 using Utils;
@@ -16,8 +14,9 @@ class Database
     public Database(string filePath)
     {
         // Create empty lists in order to populate them later on
-        Accounts = new();
-        Transactions = new();
+        Accounts = new List<Account>();
+        Transactions = new List<Transaction>();
+        Settings = new Dictionary<string, object>();
         
         // File path to database
         FilePath = filePath;
@@ -77,7 +76,7 @@ class Database
             // Write the JSON string to the database file
             File.WriteAllText(FilePath, jsonString);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             // Handle exceptions related to file writing or serialization
             throw new DatabaseSaveException("Error during database save");
@@ -86,98 +85,161 @@ class Database
     
     public Account GetAccount(string name)
     {
+        // Iterate through all accounts
         foreach (Account account in Accounts)
         {
-            if (account.Name == name)
+            // Check if the current account matches the provided name
+            if (account.AccountName == name)
+            {
+                // Return the matching account
                 return account;
+            }
         }
 
+        // Throw an exception if no matching account is found
         throw new AccountDoesNotExist("Account does not exist");
     }
 
-    public bool UpdateAccount(Account account)
+    public bool UpdateAccount(Account updatedAccount)
     {
+        // Iterate through all accounts
         for (int i = 0; i < Accounts.Count; i++)
         {
-            if (Accounts[i].Name != account.Name)
-                continue;
-            Accounts[i] = account;
-            SaveDatabase();
-            return true;
+            // Check if the current account matches the updated account's name
+            if (Accounts[i].AccountName == updatedAccount.AccountName)
+            {
+                // Update the account in the list
+                Accounts[i] = updatedAccount;
+
+                // Save the database after the update
+                SaveDatabase();
+
+                // Return true to indicate a successful update
+                return true;
+            }
         }
 
+        // Return false if no matching account is found
         return false;
     }
 
     public bool RemoveAccount(string name)
     {
+        // Iterate through all accounts
         for (int i = 0; i < Accounts.Count; i++)
         {
-            if (Accounts[i].Name != name)
-                continue;
-            RemoveAccountAt(i);
-            SaveDatabase();
-            return true;
+            // Check if the current account matches the provided name
+            if (Accounts[i].AccountName == name)
+            {
+                // Remove the account at the current index
+                RemoveAccountAt(i);
+
+                // Save the database after the removal
+                SaveDatabase();
+
+                // Return true to indicate a successful removal
+                return true;
+            }
         }
+
+        // Return false if no matching account is found
         return false;
     }
 
-    public bool AddAccount(Account account)
+    public bool AddAccount(Account newAccount)
     {
-        if (AccountExist(account.Name))
+        // Check if an account with the same name already exists
+        if (AccountExist(newAccount.AccountName))
+        {
+            // Return false to indicate that the account was not added
             return false;
+        }
 
-        Accounts.Add(account);
+        // Add the new account to the list
+        Accounts.Add(newAccount);
+
+        // Save the database after the addition
         SaveDatabase();
+
+        // Return true to indicate a successful addition
         return true;
     }
 
-    public void SetTransactionsPerPage(int value)
+    public void SetTransactionsPerPage(int newPerPageValue)
     {
-        if (value is < 30 or > 100)
-            throw new TransactionPerPageTooBig("Too high/low value for transactionPerPage setting");
+        // Check if the new value is within the valid range
+        if (newPerPageValue < 30 || newPerPageValue > 100)
+        {
+            // Throw an exception if the value is out of range
+            throw new TransactionPerPageTooBig("Invalid value for transactionsPerPage setting");
+        }
 
-        Settings["transactionsPerPage"] = value;
+        // Update the transactions per page setting
+        Settings["transactionsPerPage"] = newPerPageValue;
+
+        // Save the database after the update
         SaveDatabase();
     }
-
-    public void SetPreferredCurrency(string currency)
+    
+    public void SetPreferredCurrency(string newCurrency)
     {
-        if (!CheckCurrency.IsValidCurrency(currency))
+        // Check if the new currency is valid
+        if (!CheckCurrency.IsValidCurrency(newCurrency))
+        {
+            // Throw an exception if the currency is not supported
             throw new UnknownCurrency("This currency is not supported");
+        }
 
-        Settings["preferredCurrency"] = currency.ToUpper();
+        // Update the preferred currency setting (convert to uppercase for consistency)
+        Settings["preferredCurrency"] = newCurrency.ToUpper();
+
+        // Save the database after the update
         SaveDatabase();
     }
 
-    public void AddTransaction(Transaction transaction)
+    public void AddTransaction(Transaction newTransaction)
     {
-        Transactions.Add(transaction);
+        // Add the new transaction to the list
+        Transactions.Add(newTransaction);
+
+        // Save the database after the addition
         SaveDatabase();
     }
 
-    public void RemoveTransactionAt(int index)
+    public void RemoveTransactionAt(int indexToRemove)
     {
-        Transactions.RemoveAt(index);
+        // Remove the transaction at the specified index
+        Transactions.RemoveAt(indexToRemove);
+
+        // Save the database after the removal
         SaveDatabase();
     }
-
-    public void RemoveAccountAt(int index)
+    
+    public void RemoveAccountAt(int indexToRemove)
     {
-        Accounts.RemoveAt(index);
+        // Remove the account at the specified index
+        Accounts.RemoveAt(indexToRemove);
+
+        // Save the database after the removal
         SaveDatabase();
     }
 
-    public bool AccountExist(string name) => Accounts.Any(acc => acc.Name == name);
+    public bool AccountExist(string name) => Accounts.Any(acc => acc.AccountName == name);
+    
     public bool AccountsEmpty() => Accounts.Count == 0;
     
-    public object preferredCurrency => Settings["preferredCurrency"];
-    public object transactionsPerPage => Settings["transactionsPerPage"];
+    public bool TransactionsEmpty() => Transactions.Count == 0;
+    
+    public object PreferredCurrency => Settings["preferredCurrency"];
+    
+    public object TransactionsPerPage => Settings["transactionsPerPage"];
 }
 
 public class DatabaseSchema
 {
-    public required List<string> accounts { get; set; }
-    public required List<string> transactions { get; set; }
-    public required Dictionary<string, object> settings { get; set; }
+    // null! is a workaround to be supported by NET 6.0 since required
+    // is not available just yet
+    public List<string> accounts { get; init; } = null!;
+    public List<string> transactions { get; init; } = null!;
+    public Dictionary<string, object> settings { get; init; } = null!;
 }
